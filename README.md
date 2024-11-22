@@ -34,10 +34,10 @@ cd knowledge-graph-generator
 
 2. Create a `.env` file from the example:
 ```bash
-cp .env.example .env
+cp .env .env
 ```
 
-3. Edit the `.env` file and add your Google API key:
+3. Edit the `.env` file and add your Google API key and other Important keys:
 ```
 GOOGLE_API_KEY=your_google_api_key_here
 ```
