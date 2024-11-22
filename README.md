@@ -27,7 +27,7 @@ A Python application that generates knowledge graphs from PDF documents using Fa
 
 1. Clone the repository:
 ```bash
-git clone 
+git clone
 cd knowledge-graph-generator
 ```
 
