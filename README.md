@@ -1,6 +1,7 @@
 # Knowledge Graph Generator
 
-A Python application that generates knowledge graphs from PDF documents using FalkorDB and Google's Gemini model.
+A Python application that generates knowledge graphs from PDF documents using FalkorDB and Google's Gemini model. The Knowledge Graph generator extends the GraphRAG-SDK framework to
+handle PDF files using the Unstructured-IO library.
 
 ## Prerequisites
 
