@@ -28,7 +28,7 @@ handle PDF files using the Unstructured-IO library.
 
 1. Clone the repository:
 ```bash
-git clone 
+git clone
 cd knowledge-graph-generator
 ```
 
