@@ -1,0 +1,16 @@
+#  .pre-commit-config.yaml
+repos:
+    # repository with hook definitions
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0  # release version of the repo
+    hooks:  # list of hooks from the repo to include in this project
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-yaml
+        args: ['--unsafe']  # add arguments to `check-yaml`
+
+    # download another repository with hooks
+-   repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+    -   id: black

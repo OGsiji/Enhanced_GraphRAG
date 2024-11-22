@@ -1,0 +1,52 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit install
+          pre-commit run --all-files
+
+
+      # - name: Install ffmpeg binary
+      #   run: |
+      #       apt-get update && \
+      #       apt-get install -y ffmpeg && \
+      #       rm -rf /var/lib/apt/lists/*
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: lint
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
+
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
+
+  #     - name: Run unit tests
+  #       run: |
+  #         pytest consumer_producer/test.py

@@ -1,0 +1,9 @@
+unstructured[pdf]
+python-dotenv
+redis
+pytest
+black
+flake8
+mypy
+google-generativeai
+graphrag_sdk[all]

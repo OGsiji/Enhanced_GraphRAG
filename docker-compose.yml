@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    ports:
+      - "6379:6379"
+      - "3000:3000"  # Expose the UI port
+    volumes:
+      - falkordb_data:/data
+    networks:
+      - kg_network
+
+  kg_generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./initial_pdfs:/app/initial_pdfs
+      - ./additional_pdfs:/app/additional_pdfs
+      - ./.env:/app/.env
+    depends_on:
+      - falkordb
+    networks:
+      - kg_network
+    environment:
+      - FALKORDB_HOST=falkordb
+      - FALKORDB_PORT=6379
+
+volumes:
+  falkordb_data:
+
+networks:
+  kg_network:
+    driver: bridge
