@@ -14,16 +14,6 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-# Verify Google API key
-if not os.getenv("GOOGLE_API_KEY"):
-    raise ValueError("GOOGLE_API_KEY not found in environment variables")
-
-    falkordb_config = FalkorDBConfig(
-        host=os.getenv("FALKORDB_HOST", "localhost"),
-        port=int(os.getenv("FALKORDB_PORT", "6379")),
-    )
-
-
 def test_knowledge_graph_initialization(processing_config, falkordb_config):
     generator = KnowledgeGraphGenerator(
         model_name="gemini-1.5-flash-001",
