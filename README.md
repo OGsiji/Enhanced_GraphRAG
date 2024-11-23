@@ -29,7 +29,7 @@ handle PDF files using the Unstructured-IO library.
 1. Clone the repository:
 ```bash
 git clone https://github.com/OGsiji/Enhanced_GraphRAG.git
-cd ENHANCED_GRAPH
+cd Enhanced_GraphRAG
 ```
 
 2. Create a `.env` file from the example:
