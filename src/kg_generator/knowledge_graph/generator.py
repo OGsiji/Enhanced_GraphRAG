@@ -12,6 +12,7 @@ from graphrag_sdk import KnowledgeGraph, Ontology
 from graphrag_sdk.models.gemini import GeminiGenerativeModel
 from graphrag_sdk.model_config import KnowledgeGraphModelConfig
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -118,11 +119,18 @@ class KnowledgeGraphGenerator:
         if not self.kg:
             raise ValueError("No knowledge graph exists. Please generate one first.")
 
+        #   We assume that the additional pdf are of fixed length
         try:
             # Create Source objects from new text files
-            new_sources = [
-                Source(os.path.join(sources, file)) for file in os.listdir(sources)
-            ]
+            pdf_files = list(Path(sources).glob("*.pdf"))
+            if not pdf_files:
+                raise KnowledgeGraphError("No PDF files found in directory")
+
+            new_sources = []
+            for i in range(0, len(pdf_files), self.config.batch_size):
+                batch = pdf_files[i : i + self.config.batch_size]
+                sources = self.pdf_processor.process_pdf_batch(batch)
+                new_sources.extend(sources)
 
             if not new_sources:
                 raise ValueError("No text sources found for update")

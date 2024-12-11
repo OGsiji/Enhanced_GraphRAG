@@ -50,7 +50,7 @@ def main():
     # Generate initial knowledge graph
     print("Generating initial knowledge graph...")
     kg_generator.generate_knowledge_graph(
-        pdf_dir=initial_pdf_dir, kg_name="pdf_knowledge_graph"
+        pdf_dir=initial_pdf_dir, kg_name="modelling_graph"
     )
 
     # Check for additional PDFs
@@ -63,7 +63,7 @@ def main():
 
     # Example query
     response = kg_generator.query_knowledge_graph(
-        "What are the main topics discussed in the documents?"
+        "Please explain the topics discussed in the documents?"
     )
     print(f"Query response: {response}")
 
