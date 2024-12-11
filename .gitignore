@@ -26,3 +26,5 @@ ENV/
 htmlcov/
 temp_processed/
 .pytest_cache/
+additional_pdfs/*
+initial_pdfs/*
