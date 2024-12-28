@@ -1,13 +1,14 @@
 # examples/basic_usage.py
 import os
 from pathlib import Path
+import asyncio
 from dotenv import load_dotenv
 from kg_generator.config import ProcessingConfig, FalkorDBConfig
 from kg_generator.knowledge_graph.generator import KnowledgeGraphGenerator
 from kg_generator.utils.logging import setup_logging
 
 
-def main():
+async def main():
     # Set up logging
     setup_logging()
 
@@ -49,8 +50,8 @@ def main():
 
     # Generate initial knowledge graph
     print("Generating initial knowledge graph...")
-    kg_generator.generate_knowledge_graph(
-        pdf_dir=initial_pdf_dir, kg_name="modelling_graph"
+    await kg_generator.generate_knowledge_graph(
+        pdf_dir=initial_pdf_dir, kg_name="new_graph"
     )
 
     # Check for additional PDFs
@@ -63,10 +64,10 @@ def main():
 
     # Example query
     response = kg_generator.query_knowledge_graph(
-        "Please explain the topics discussed in the documents?"
+        "Answer random questions within the knowledge graph"
     )
     print(f"Query response: {response}")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

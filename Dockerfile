@@ -1,5 +1,5 @@
-# Dockerfile
-FROM python:3.10-slim
+# Use the official ARM64 image as base
+FROM unclecode/crawl4ai:basic-arm64 as base
 
 # Set working directory
 WORKDIR /app
@@ -38,5 +38,6 @@ ENV FALKORDB_PORT=6379
 # Create directories for PDFs
 RUN mkdir -p initial_pdfs additional_pdfs
 
-# Run the application
+
+# Entry point that runs both your app and allows crawling
 CMD ["python", "examples/basic_usage.py"]

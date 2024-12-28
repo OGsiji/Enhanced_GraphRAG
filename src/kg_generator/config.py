@@ -9,8 +9,16 @@ class ProcessingConfig:
     chunk_size: int = 1000
     overlap: int = 100
     max_workers: int = 4
-    batch_size: int = 5
+    batch_size: int = 3
     temp_dir: str = "temp_processed"
+
+
+@dataclass
+class LinkConfig:
+    """Add link urls for processing"""
+
+    url: str = True
+    pdf: bool = True
 
 
 @dataclass
