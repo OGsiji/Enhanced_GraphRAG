@@ -42,24 +42,18 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 4. Create PDF directories and add your PDF files:
 ```bash
-
 mkdir initial_pdfs additional_pdfs
 # Add initial PDFs
 cp path/to/your/initial/pdfs/*.pdf initial_pdfs/
 # Add additional PDFs (optional)
 cp path/to/your/additional/pdfs/*.pdf additional_pdfs/
 
-#Add Urls,
-navigate
-to src/kg_generator/url.py
-this is where you can add/edit urls
+# Add URLs
+Navigate to `src/kg_generator/url.py` and add/edit the URLs.
 
 ## Select what to run
 
-you can also set what to run whether url or pdfs in
-src/kg_generator/config.py {LinkConfig.url} or {LinkConfig.pdf}
-
-default is true
+You can also set what to run, whether URLs or PDFs, in `src/kg_generator/config.py` using `LinkConfig.url` or `LinkConfig.pdf`. The default value is `true`.
 ```
 
 5. Build and run the containers:
