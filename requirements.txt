@@ -7,3 +7,8 @@ flake8
 mypy
 google-generativeai
 graphrag_sdk[all]
+crawl4ai
+asyncio
+playwright
+beautifulsoup4
+lxml

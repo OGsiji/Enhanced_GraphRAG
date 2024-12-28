@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import List, Union
 import logging
 import os
-from ..config import ProcessingConfig, FalkorDBConfig
+import asyncio
+from ..url import URL
+from ..config import ProcessingConfig, FalkorDBConfig, LinkConfig
 from ..exceptions import KnowledgeGraphError
-from ..processors.pdf_processor import PDFProcessor
+from ..processors.pdf_processor import BasePDFProcessor, URLProcessor
 from graphrag_sdk.source import Source
 from graphrag_sdk import KnowledgeGraph, Ontology
 from graphrag_sdk.models.gemini import GeminiGenerativeModel
@@ -21,17 +23,21 @@ class KnowledgeGraphGenerator:
 
     def __init__(
         self,
-        model_name: str = "gemini-1.5-flash-001",
+        model_name: str = "gemini-2.0-flash-exp",
         falkordb_config: FalkorDBConfig = FalkorDBConfig(),
         processing_config: ProcessingConfig = ProcessingConfig(),
+        link_config: LinkConfig = LinkConfig(),
     ):
         self.model = GeminiGenerativeModel(model_name=model_name)
         self.falkordb_config = falkordb_config
         self.config = processing_config
+        self.link_config = link_config
         self.kg = None
-        self.pdf_processor = PDFProcessor(processing_config)
+        self.pdf_processor = BasePDFProcessor(processing_config)
+        self.url_processor = URLProcessor(processing_config)
+        self.url_list = URL()
 
-    def generate_knowledge_graph(self, pdf_dir: Union[str, Path], kg_name: str) -> None:
+    async def generate_knowledge_graph(self, pdf_dir, kg_name: str) -> None:
         """Generate knowledge graph from PDF files"""
         try:
             pdf_files = list(Path(pdf_dir).glob("*.pdf"))
@@ -39,15 +45,21 @@ class KnowledgeGraphGenerator:
                 raise KnowledgeGraphError("No PDF files found in directory")
 
             all_sources = []
-            for i in range(0, len(pdf_files), self.config.batch_size):
-                batch = pdf_files[i : i + self.config.batch_size]
-                sources = self.pdf_processor.process_pdf_batch(batch)
-                all_sources.extend(sources)
+
+            if self.link_config.url:
+                web_source = await self.url_processor.process_url(self.url_list)
+                all_sources.extend(web_source)
+
+            if self.link_config.pdf:
+                for i in range(0, len(pdf_files), self.config.batch_size):
+                    batch = pdf_files[i : i + self.config.batch_size]
+                    sources = self.pdf_processor.process_pdf_batch(batch)
+                    all_sources.extend(sources)
 
             if not all_sources:
                 raise KnowledgeGraphError("No valid sources generated from PDFs")
 
-            print(all_sources)
+            # print(all_sources)
 
             ontology = self._generate_ontology(all_sources, kg_name)
             self._create_knowledge_graph(all_sources, ontology, kg_name)
@@ -57,24 +69,28 @@ class KnowledgeGraphGenerator:
             raise KnowledgeGraphError(f"Failed to generate knowledge graph: {str(e)}")
 
     def _generate_ontology(self, sources: List[Source], kg_name: str) -> Ontology:
-        """Generate optimized ontology from sources"""
         try:
-            sample_size = max(1, round(len(sources) * 0.1))
-            sampled_sources = random.sample(sources, sample_size)
-            logger.info(f"Using {sample_size} sources for ontology generation")
+            percent = 0.1  # min(len(sources), max(1, round(len(sources) * 0.1)))
+            sampled_sources = random.sample(
+                sources, round(len(sources) * percent)
+            )  # random.sample(sources, sample_size)
+            logger.info(f"Using {percent} sources for ontology generation")
 
             boundaries = """
                     Extract key entities and relationships from the documents.
-                    Focus on main concepts and their connections.
-                    Avoid creating entities for minor details that can be attributes.
-                    Each entity should have:
-                    - A clear, unique identifier
-                    - At least one relationship to another entity
-                    - Specific attributes that define its properties
+                    # Focus on main concepts and their connections.
+                    # Avoid creating entities for minor details that can be attributes.
+                    # Each entity should have:
+                    # - A clear, unique identifier
+                    # - At least one relationship to another entity
+                    # - Specific attributes that define its properties
                 """
 
+            for source in sampled_sources:
+                logger.debug(f"Source details: {source}")
+
             ontology = Ontology.from_sources(
-                sources=sampled_sources, boundaries=boundaries, model=self.model
+                sources=sources, boundaries=boundaries, model=self.model
             )
 
             output_path = f"{kg_name}_ontology.json"
@@ -83,7 +99,6 @@ class KnowledgeGraphGenerator:
             logger.info(f"Saved ontology to {output_path}")
 
             return ontology
-
         except Exception as e:
             logger.error(f"Failed to generate ontology: {str(e)}")
             raise KnowledgeGraphError(f"Failed to generate ontology: {str(e)}")
