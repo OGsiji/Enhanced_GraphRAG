@@ -30,14 +30,28 @@ RUN pip install -e .
 COPY examples/ examples/
 COPY tests/ tests/
 
-# Set environment variables
+
+RUN mkdir -p initial_pdfs additional_pdfs temp_processed
+
 ENV PYTHONUNBUFFERED=1
 ENV FALKORDB_HOST=falkordb
 ENV FALKORDB_PORT=6379
 
-# Create directories for PDFs
-RUN mkdir -p initial_pdfs additional_pdfs
+# Create streamlit config with updated settings
+RUN mkdir -p /root/.streamlit
+RUN echo '\
+[server]\n\
+port = 8501\n\
+address = "0.0.0.0"\n\
+enableXsrfProtection = false\n\
+enableCORS = false\n\
+\n\
+[browser]\n\
+gatherUsageStats = false\n\
+serverAddress = "localhost"\n\
+serverPort = 8501\n\
+' > /root/.streamlit/config.toml
 
+EXPOSE 8501
 
-# Entry point that runs both your app and allows crawling
-CMD ["python", "examples/basic_usage.py"]
+ENTRYPOINT ["streamlit", "run", "examples/basic_usage.py"]

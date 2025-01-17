@@ -1,35 +1,39 @@
-version: '3.8'
-
 services:
   falkordb:
     image: falkordb/falkordb:latest
     ports:
       - "6379:6379"
-      - "3000:3000"  # Expose the UI port
+      - "3000:3000"
     volumes:
       - falkordb_data:/data
     networks:
-      - kg_network
+      - kg-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   kg_generator:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./initial_pdfs:/app/initial_pdfs
-      - ./additional_pdfs:/app/additional_pdfs
-      - ./.env:/app/.env
-    depends_on:
-      - falkordb
-    networks:
-      - kg_network
+    build: .
+    ports:
+      - "8501:8501"
     environment:
       - FALKORDB_HOST=falkordb
       - FALKORDB_PORT=6379
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./initial_pdfs:/app/initial_pdfs
+      - ./additional_pdfs:/app/additional_pdfs
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    networks:
+      - kg-network
+
+networks:
+  kg-network:
+    driver: bridge
 
 volumes:
   falkordb_data:
-
-networks:
-  kg_network:
-    driver: bridge
