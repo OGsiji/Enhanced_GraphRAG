@@ -12,3 +12,4 @@ asyncio
 playwright
 beautifulsoup4
 lxml
+streamlit
