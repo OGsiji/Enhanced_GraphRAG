@@ -48,13 +48,17 @@ cp path/to/your/initial/pdfs/*.pdf initial_pdfs/
 # Add additional PDFs (optional)
 cp path/to/your/additional/pdfs/*.pdf additional_pdfs/
 
+
 # Add URLs
 Navigate to `src/kg_generator/url.py` and add/edit the URLs.
+
 
 ## Select what to run
 
 You can also set what to run, whether URLs or PDFs, in `src/kg_generator/config.py` using `LinkConfig.url` or `LinkConfig.pdf`. The default value is `true`.
 ```
+
+# NOTE: For Streamlit UI, you can upload it directly through streamlit
 
 5. Build and run the containers:
 ```bash
